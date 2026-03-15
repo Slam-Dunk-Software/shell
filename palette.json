@@ -1,0 +1,11 @@
+[
+  { "label": "↑",           "cmd": "\u001b[A",  "group": "keys" },
+  { "label": "↓",           "cmd": "\u001b[B",  "group": "keys" },
+  { "label": "←",           "cmd": "\u001b[D",  "group": "keys" },
+  { "label": "→",           "cmd": "\u001b[C",  "group": "keys" },
+  { "label": "esc",         "cmd": "\u001b",    "group": "keys" },
+  { "label": "tab",         "cmd": "\t",         "group": "keys" },
+  { "label": "shift + tab", "cmd": "\u001b[Z",  "group": "keys" },
+  { "label": "ctrl + c",    "cmd": "\u0003",    "group": "keys" },
+  { "label": "ctrl + d",    "cmd": "\u0004",    "group": "keys" }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "webterm",
+  "version": "0.1.0",
+  "description": "Web terminal with command palette — access your machine from any browser",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ssh2": "^1.17.0",
+    "ws": "^8.17.1"
+  }
+}
