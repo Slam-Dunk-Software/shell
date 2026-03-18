@@ -13,6 +13,6 @@ apt  = ["nodejs", "tmux"]
 
 [service]
 enabled      = true
-start        = "node server.js"
+start        = "HOST=$(tailscale ip -4) node server.js"
 port         = 4444
 health_check = "GET /health"
