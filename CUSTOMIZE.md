@@ -1,6 +1,6 @@
-# Customizing webterm
+# Customizing shell
 
-webterm is a web-based terminal with a mobile-friendly command palette. It
+shell is a web-based terminal with a mobile-friendly command palette. It
 SSHs into localhost via a dedicated key, attaches to a tmux session, and
 streams it to your browser over WebSocket. Works as a PWA on iOS/Android.
 
@@ -10,8 +10,8 @@ streams it to your browser over WebSocket. Works as a PWA on iOS/Android.
 
 **1. Generate a dedicated SSH key:**
 ```sh
-ssh-keygen -t ed25519 -f ~/.ssh/webterm_key -N ""
-cat ~/.ssh/webterm_key.pub >> ~/.ssh/authorized_keys
+ssh-keygen -t ed25519 -f ~/.ssh/shell_key -N ""
+cat ~/.ssh/shell_key.pub >> ~/.ssh/authorized_keys
 ```
 
 **2. Install dependencies:**
@@ -21,7 +21,7 @@ npm install
 
 **3. Create a `.env` file:**
 ```
-WEBTERM_TOKEN=1234
+SHELL_TOKEN=1234
 ```
 Token is used as the PIN on the lock screen. 4 digits recommended.
 
@@ -34,7 +34,7 @@ node server.js
 
 ## Ports
 
-### `WEBTERM_TOKEN` — auth PIN
+### `SHELL_TOKEN` — auth PIN
 **Type:** environment variable
 **Required:** yes
 
@@ -46,7 +46,7 @@ numpad, or via the URL `?token=` param).
 
 ### `SSH_KEY` — SSH private key path
 **Type:** environment variable
-**Default:** `~/.ssh/webterm_key`
+**Default:** `~/.ssh/shell_key`
 
 Path to the private key used to SSH into localhost. The corresponding public
 key must be in `~/.ssh/authorized_keys`.
@@ -64,7 +64,7 @@ key must be in `~/.ssh/authorized_keys`.
 **Default:** `main`
 
 The tmux session to attach to (or create). Change this to attach to a
-different session, or set up multiple webterm instances on different ports
+different session, or set up multiple shell instances on different ports
 each pointing at different sessions.
 
 ---

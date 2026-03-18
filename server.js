@@ -64,17 +64,17 @@ function solidPng(hex, size = 180) {
 
 const iconPng = solidPng(APP_COLOR);
 
-// PORT: WEBTERM_TOKEN — required PIN/token for the auth gate (4-digit or longer)
-const TOKEN = process.env.WEBTERM_TOKEN;
-if (!TOKEN) { console.error('WEBTERM_TOKEN not set — refusing to start'); process.exit(1); }
+// PORT: SHELL_TOKEN — required PIN/token for the auth gate (4-digit or longer)
+const TOKEN = process.env.SHELL_TOKEN;
+if (!TOKEN) { console.error('SHELL_TOKEN not set — refusing to start'); process.exit(1); }
 
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = parseInt(process.env.PORT || '4444');
 
 // PORT: SSH_KEY — path to the SSH private key used to connect to localhost
-// Create a dedicated key: ssh-keygen -t ed25519 -f ~/.ssh/webterm_key -N ""
-// Then authorize it: cat ~/.ssh/webterm_key.pub >> ~/.ssh/authorized_keys
-const SSH_KEY  = process.env.SSH_KEY  || path.join(os.homedir(), '.ssh', 'webterm_key');
+// Create a dedicated key: ssh-keygen -t ed25519 -f ~/.ssh/shell_key -N ""
+// Then authorize it: cat ~/.ssh/shell_key.pub >> ~/.ssh/authorized_keys
+const SSH_KEY  = process.env.SSH_KEY  || path.join(os.homedir(), '.ssh', 'shell_key');
 const SSH_USER = process.env.SSH_USER || os.userInfo().username;
 
 // PORT: TMUX_SESSION — tmux session name to attach to (created if it doesn't exist)
@@ -132,8 +132,8 @@ app.get('/apple-touch-icon.png', (_req, res) => {
   res.set('Content-Type', 'image/png').send(iconPng);
 });
 app.get('/manifest.json', (_req, res) => res.json({
-  name: 'webterm',
-  short_name: 'webterm',
+  name: 'shell',
+  short_name: 'shell',
   start_url: '/',
   display: 'standalone',
   background_color: '#0d0d0d',
@@ -213,6 +213,6 @@ wss.on('connection', (clientWs) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[webterm] listening on ${useTls ? 'https' : 'http'}://${HOST}:${PORT}`);
-  console.log(`[webterm] ssh user: ${SSH_USER}, key: ${SSH_KEY}, session: ${TMUX_SESSION}`);
+  console.log(`[shell] listening on ${useTls ? 'https' : 'http'}://${HOST}:${PORT}`);
+  console.log(`[shell] ssh user: ${SSH_USER}, key: ${SSH_KEY}, session: ${TMUX_SESSION}`);
 });
