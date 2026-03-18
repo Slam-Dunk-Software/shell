@@ -1,10 +1,10 @@
 [package]
-name        = "webterm"
-version     = "0.1.0"
+name        = "shell"
+version     = "0.1.1"
 description = "Web terminal with command palette — access your machine from any browser."
 authors     = ["nickagliano"]
 license     = "MIT"
-repository  = "https://github.com/Slam-Dunk-Software/webterm"
+repository  = "https://github.com/Slam-Dunk-Software/shell"
 platform    = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu"]
 
 [system-dependencies]
