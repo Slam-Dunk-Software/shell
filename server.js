@@ -75,6 +75,24 @@ const PORT = parseInt(process.env.PORT || '4444');
 // Create a dedicated key: ssh-keygen -t ed25519 -f ~/.ssh/shell_key -N ""
 // Then authorize it: cat ~/.ssh/shell_key.pub >> ~/.ssh/authorized_keys
 const SSH_KEY  = process.env.SSH_KEY  || path.join(os.homedir(), '.ssh', 'shell_key');
+
+if (!fs.existsSync(SSH_KEY)) {
+  console.error(`SSH key not found: ${SSH_KEY}`);
+  console.error('Create one with:');
+  console.error('  ssh-keygen -t ed25519 -f ~/.ssh/shell_key -N ""');
+  console.error('  cat ~/.ssh/shell_key.pub >> ~/.ssh/authorized_keys');
+  console.error('Or set SSH_KEY in your .env to point at an existing key.');
+  process.exit(1);
+}
+
+// Check tmux is available
+const { execSync } = require('child_process');
+try { execSync('which tmux', { stdio: 'ignore' }); } catch {
+  console.error('tmux not found — install it first:');
+  console.error('  brew install tmux   (macOS)');
+  console.error('  apt install tmux    (Linux)');
+  process.exit(1);
+}
 const SSH_USER = process.env.SSH_USER || os.userInfo().username;
 
 // PORT: TMUX_SESSION — tmux session name to attach to (created if it doesn't exist)
@@ -193,7 +211,14 @@ wss.on('connection', (clientWs) => {
   ssh.on('error', (err) => {
     console.error('ssh error:', err.message);
     if (clientWs.readyState === clientWs.OPEN) {
-      clientWs.send('\r\n\x1b[31m[ssh error: ' + err.message + ']\x1b[0m\r\n');
+      let hint = '';
+      if (err.message.includes('authentication') || err.message.includes('publickey')) {
+        hint = '\r\n\x1b[33mHint: make sure your SSH key is in ~/.ssh/authorized_keys:\x1b[0m\r\n' +
+               '\x1b[2m  cat ' + SSH_KEY + '.pub >> ~/.ssh/authorized_keys\x1b[0m\r\n';
+      } else if (err.message.includes('ENOENT') || err.message.includes('ECONNREFUSED')) {
+        hint = '\r\n\x1b[33mHint: is sshd running? Enable it in System Settings → General → Sharing → Remote Login\x1b[0m\r\n';
+      }
+      clientWs.send('\r\n\x1b[31m[ssh error: ' + err.message + ']\x1b[0m\r\n' + hint);
       clientWs.close();
     }
   });
