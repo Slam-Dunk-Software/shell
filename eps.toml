@@ -1,6 +1,6 @@
 [package]
 name        = "shell"
-version     = "0.1.7"
+version     = "0.1.8"
 description = "Web terminal with command palette — access your machine from any browser."
 authors     = ["nickagliano"]
 license     = "MIT"
