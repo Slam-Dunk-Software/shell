@@ -85,9 +85,13 @@ if (!fs.existsSync(SSH_KEY)) {
   process.exit(1);
 }
 
-// Check tmux is available
+// Check tmux is available and capture its full path for use in SSH sessions
+// (SSH sessions may have a restricted PATH that doesn't include /usr/local/bin)
 const { execSync } = require('child_process');
-try { execSync('which tmux', { stdio: 'ignore' }); } catch {
+let TMUX_BIN = 'tmux';
+try {
+  TMUX_BIN = execSync('which tmux').toString().trim();
+} catch {
   console.error('tmux not found — install it first:');
   console.error('  brew install tmux   (macOS)');
   console.error('  apt install tmux    (Linux)');
@@ -181,7 +185,7 @@ wss.on('connection', (clientWs) => {
   });
 
   ssh.on('ready', () => {
-    const cmd = `LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color tmux -u new-session -A -s ${TMUX_SESSION}`;
+    const cmd = `LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 TERM=xterm-256color ${TMUX_BIN} -u new-session -A -s ${TMUX_SESSION}`;
     ssh.exec(cmd, { pty: { term: 'xterm-256color', cols, rows }, env: { TERM: 'xterm-256color', LANG: 'en_US.UTF-8', LC_ALL: 'en_US.UTF-8' } }, (err, sh) => {
       if (err) {
         console.error('shell error:', err.message);

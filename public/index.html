@@ -481,6 +481,20 @@
     if (pin.length === 4) submitPin();
   });
 
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('gate').style.display === 'none') return;
+    if (padLocked) return;
+    if (e.key >= '0' && e.key <= '9') {
+      if (pin.length >= 4) return;
+      pin += e.key;
+      updateDots('normal');
+      if (pin.length === 4) submitPin();
+    } else if (e.key === 'Backspace') {
+      pin = pin.slice(0, -1);
+      updateDots('normal');
+    }
+  });
+
   if (sessionStorage.getItem('webterm_token')) connect();
   else showGate();
 
