@@ -7,8 +7,8 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="webterm">
-  <title>webterm</title>
+  <meta name="apple-mobile-web-app-title" content="shell">
+  <title>shell</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5/css/xterm.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -292,7 +292,7 @@
 </label>
 <div id="gate">
   <div id="gate-inner">
-    <div id="gate-logo">webterm</div>
+    <div id="gate-logo">shell</div>
     <div id="gate-dots">
       <div class="gate-dot" id="dot-0"></div>
       <div class="gate-dot" id="dot-1"></div>
@@ -317,7 +317,7 @@
 </div>
 <div id="app">
   <div id="header">
-    <div id="logo">webterm</div>
+    <div id="logo">shell</div>
   </div>
   <div id="main">
     <div id="terminal-wrap">
@@ -432,7 +432,7 @@
       remaining--;
       if (remaining <= 0) {
         clearInterval(t);
-        logo.textContent = 'webterm';
+        logo.textContent = document.title;
         setPadDisabled(false);
         updateDots('normal');
       } else {
@@ -495,8 +495,29 @@
     }
   });
 
-  if (sessionStorage.getItem('webterm_token')) connect();
-  else showGate();
+  fetch('/setup-status').then(r => r.json()).then(({ token_set, app_name }) => {
+    // Apply app name everywhere it's visible
+    const name = app_name || 'shell';
+    document.title = name;
+    document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute('content', name);
+    document.getElementById('gate-logo').textContent = name;
+    document.getElementById('logo').textContent = name;
+    if (!token_set) {
+      document.getElementById('gate-dots').style.display = 'none';
+      document.getElementById('gate-pad').style.display = 'none';
+      const msg = document.createElement('div');
+      msg.style.cssText = 'color:var(--text-dim);font-size:13px;line-height:1.6;text-align:center;max-width:260px;margin-top:8px';
+      msg.innerHTML = '<b style="color:var(--text)">SHELL_TOKEN not set</b><br>Add it to your <code>.env</code> file:<br><code style="color:var(--accent)">SHELL_TOKEN=1234</code><br><br>Then restart: <code style="color:var(--accent)">epc restart shell</code>';
+      document.getElementById('gate-inner').appendChild(msg);
+    } else if (sessionStorage.getItem('webterm_token')) {
+      connect();
+    } else {
+      showGate();
+    }
+  }).catch(() => {
+    if (sessionStorage.getItem('webterm_token')) connect();
+    else showGate();
+  });
 
   term.onData((data) => send({ type: 'data', data }));
 

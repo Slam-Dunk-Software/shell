@@ -66,10 +66,23 @@ const iconPng = solidPng(APP_COLOR);
 
 // PORT: SHELL_TOKEN — required PIN/token for the auth gate (4-digit or longer)
 const TOKEN = process.env.SHELL_TOKEN;
-if (!TOKEN) { console.error('SHELL_TOKEN not set — refusing to start'); process.exit(1); }
+if (!TOKEN) { console.warn('SHELL_TOKEN not set — PIN screen will show a setup message'); }
 
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = parseInt(process.env.PORT || '4444');
+
+// APP_NAME: display name shown in the UI. Defaults to the eps.toml package name,
+// then the directory name, then 'shell'. Override with APP_NAME in .env.
+function resolveAppName() {
+  if (process.env.APP_NAME) return process.env.APP_NAME;
+  try {
+    const toml = fs.readFileSync(path.join(__dirname, 'eps.toml'), 'utf8');
+    const m = toml.match(/^name\s*=\s*"([^"]+)"/m);
+    if (m) return m[1];
+  } catch {}
+  return path.basename(__dirname);
+}
+const APP_NAME = resolveAppName();
 
 // PORT: SSH_KEY — path to the SSH private key used to connect to localhost
 // Create a dedicated key: ssh-keygen -t ed25519 -f ~/.ssh/shell_key -N ""
@@ -149,6 +162,7 @@ const wss = new WebSocketServer({
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/setup-status', (_req, res) => res.json({ token_set: !!TOKEN, app_name: APP_NAME }));
 app.get('/palette.json', (_req, res) => res.sendFile(path.join(__dirname, 'palette.json')));
 app.get('/apple-touch-icon.png', (_req, res) => {
   res.set('Content-Type', 'image/png').send(iconPng);
