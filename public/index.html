@@ -503,6 +503,7 @@
     document.getElementById('gate-logo').textContent = name;
     document.getElementById('logo').textContent = name;
     if (!token_set) {
+      showGate();
       document.getElementById('gate-dots').style.display = 'none';
       document.getElementById('gate-pad').style.display = 'none';
       const msg = document.createElement('div');
