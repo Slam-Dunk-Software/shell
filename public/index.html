@@ -391,7 +391,7 @@
     clearTimeout(reconnectTimer);
     intentionalClose = false;
     const token = sessionStorage.getItem('webterm_token');
-    ws = new WebSocket(`${wsProto}://${location.host}?token=${encodeURIComponent(token || '')}`);
+    ws = new WebSocket(`${wsProto}://${location.host}`, [encodeURIComponent(token || '')]);
 
     ws.onopen = () => send({ type: 'resize', cols: term.cols, rows: term.rows });
     ws.binaryType = 'arraybuffer';

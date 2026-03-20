@@ -150,11 +150,15 @@ function recordSuccess(ip) { loginState.delete(ip); }
 
 const wss = new WebSocketServer({
   server,
+  // Echo back the subprotocol so the browser doesn't reject the handshake
+  handleProtocols: (protocols) => protocols.values().next().value || false,
   verifyClient: ({ req }, cb) => {
     const ip = req.socket.remoteAddress;
     const s = getState(ip);
     if (Date.now() < s.lockedUntil) { cb(false, 429, 'Too Many Attempts'); return; }
-    const token = new URL(req.url, 'https://localhost').searchParams.get('token');
+    // Token is sent as the WebSocket subprotocol (not in the URL) to keep it out of logs
+    const proto = req.headers['sec-websocket-protocol'] || '';
+    const token = decodeURIComponent(proto.split(', ')[0] || '');
     if (token === TOKEN) { recordSuccess(ip); cb(true); }
     else { recordFailure(ip); cb(false, 401, 'Unauthorized'); }
   },
